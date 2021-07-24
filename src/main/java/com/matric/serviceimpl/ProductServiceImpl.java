@@ -1,54 +1,66 @@
 package com.matric.serviceimpl;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.matric.beans.Product;
-import com.matric.service.ProductService;
-import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
+import com.matric.repository.ProductRepository;
+import com.matric.service.ProductService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.stereotype.Service;
+import com.github.fge.jsonpatch.JsonPatch;
+
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
 public class ProductServiceImpl implements ProductService {
 
+    private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
+
+
+    private @Autowired ProductRepository productRepository;
 
     @Override
     public List<Product> getProducts() {
-        Product product1 = new Product();
-        product1.setId(1);
-        product1.setName("Mobile");
-        product1.setColor("black");
-                product1.setCost(Double.valueOf(32000.00d));
-                product1.setExpDate(new Date());
-                product1.setMfDate(new Date());
-                product1.setMfCompany("Samsung");
-
-        Product product2 = new Product();
-        Product product3 = new Product();
-        List<Product> products = new ArrayList<>();
-        products.add(product1);
-        products.add(product2);
-        products.add(product3);
-        return products;
+        logger.info("get products");
+        return productRepository.findAll();
     }
+
 
     @Override
     public Product createProduct(Product product) {
-        return null;
+        logger.info("create product");
+        return productRepository.save(product);
     }
 
     @Override
     public Product getProduct(Integer id) {
-        return null;
+        logger.info("get product by id: {}", id);
+        return productRepository.findById(id).get();
     }
 
     @Override
-    public Product updateProduct(Integer id, Product product) {
-        return null;
+    public Product updateProduct(Integer id, JsonPatch patch) throws Exception {
+        logger.info("update product id: {}", id);
+        Product on = productRepository.findById(id).get();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        JsonNode patched = patch.apply(objectMapper.convertValue(on, JsonNode.class));
+        return objectMapper.treeToValue(patched, on.getClass());
     }
 
+    @Transactional
+    @Modifying
     @Override
     public void deleteProduct(Integer id) {
-
+        logger.info("delete product id: {}", id);
+        productRepository.deleteById(id);
     }
 }
