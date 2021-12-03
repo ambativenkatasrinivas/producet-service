@@ -1,8 +1,5 @@
-FROM openjdk:latest
-
-ADD target/product-service-1.0-SNAPSHOT.jar app.jar
-
-ENTRYPOINT ["java","-jar","app.jar"]
-
-EXPOSE 8080
-
+FROM openjdk:8-jre-alpine
+ 
+COPY spring-boot-*.war /app.war
+ 
+CMD ["/usr/bin/java", "-jar", "-Dspring.profiles.active=test", "/app.war"]
