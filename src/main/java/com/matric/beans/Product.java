@@ -2,20 +2,20 @@ package com.matric.beans;
 
 import lombok.ToString;
 
-import javax.persistence.*;
+//import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
 
 @ToString
-@Entity
-@Table
+//@Entity
+//@Table
 public class Product implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
     private double width;
@@ -23,13 +23,13 @@ public class Product implements Serializable {
     private String color;
     private int rating;
     private Double cost;
-    @Column(name = "mf_date")
+//    @Column(name = "mf_date")
     private Date mfDate;
-    @Column(name = "exp_date")
+//    @Column(name = "exp_date")
     private Date expDate;
-    @Column(name = "mf_location")
+//    @Column(name = "mf_location")
     private String mfLocation;
-    @Column(name = "mf_company")
+//    @Column(name = "mf_company")
     private String mfCompany;
 
     public Integer getId() {
